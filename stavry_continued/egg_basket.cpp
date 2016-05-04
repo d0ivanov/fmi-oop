@@ -23,7 +23,8 @@ EggBasket::EggBasket(const char* basketName)
 }
 
 EggBasket::EggBasket(const EggBasket& other)
-    : head(new Node()),
+    : size(0),
+      head(new Node()),
       tail(head)
 {
     allocateAndCopy(other.name);
@@ -37,7 +38,8 @@ EggBasket::EggBasket(const EggBasket& other)
 }
 
 EggBasket::EggBasket(const char* basketFileName, const char* basketName)
-    : head(new Node()),
+    : size(0),
+      head(new Node()),
       tail(head)
 {
     allocateAndCopy(basketName);
@@ -174,6 +176,65 @@ EggBasket& EggBasket::operator%=(const EggBasket& other)
     return *this;
 }
 
+bool EggBasket::operator==(const EggBasket& other)
+{
+    if(size != other.size)
+        return false;
+
+    Node* current = head->next;
+    Node* other_current = other.head->next;
+
+    size_t equals = 0;
+    while(current != NULL && current->data == other_current->data)
+    {
+        equals++;
+        current = current->next;
+        other_current = other_current->next;
+    }
+
+    return equals == size;
+}
+
+bool EggBasket::operator!=(const EggBasket& other)
+{
+    return !(*this == other);
+}
+
+bool EggBasket::operator>(const EggBasket& other)
+{
+    if(size != other.size)
+        return size > other.size;
+
+    Node* current = head->next;
+    Node* other_current = other.head->next;
+
+    while(current != NULL && other_current != NULL)
+    {
+        if(current->data <= other_current->data)
+            return false;
+
+        current = current->next;
+        other_current = other_current->next;
+    }
+
+    return true;
+}
+
+bool EggBasket::operator<(const EggBasket& other)
+{
+    return !(*this > other) && *this != other;
+}
+
+bool EggBasket::operator<=(const EggBasket& other)
+{
+    return *this < other ||  *this == other;
+}
+
+bool EggBasket::operator>=(const EggBasket& other)
+{
+    return *this > other ||  *this == other;
+}
+
 void EggBasket::add(const Egg& egg)
 {
     if(egg.getId() == NULL)
@@ -231,10 +292,10 @@ void EggBasket::serialize() const
     while(curr != NULL)
     {
         size_t eggSize = curr->data.getSize();
-        size_t idLen = curr->data.getIdLen();
+        size_t idLen = (strlen(curr->data.getId()) + 1) * sizeof(char);
         basket.write((const char*)&eggSize, sizeof(size_t));
         basket.write((const char*)&idLen, sizeof(size_t));
-        basket.write(curr->data.getId(), curr->data.getSize());
+        basket.write(curr->data.getId(), idLen);
 
         if(basket.fail())
         {

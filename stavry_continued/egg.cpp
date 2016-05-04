@@ -5,7 +5,6 @@
 
 Egg::Egg()
     : size(0),
-      idLen(0),
       id(NULL)
 {}
 
@@ -17,24 +16,16 @@ Egg::Egg(const char* id, size_t size)
         throw std::invalid_argument("Argument id cannot be NULL!");
     }
 
-
-    size_t length = strlen(id);
-
-    this->idLen = (length + 1) * sizeof(char);
-    this->id = new char[length + 1];
-
+    this->id = new char[strlen(id) + 1];
     strcpy(this->id, id);
 }
 
 Egg::Egg(const Egg& other)
 {
     if(other.id == NULL)
-    {
         throw std::invalid_argument("Invalid source object state!");
-    }
 
     id = new char[strlen(other.id) + 1];
-    idLen = other.idLen;
 
     strcpy(id, other.id);
     size = other.size;
@@ -50,11 +41,6 @@ const char* Egg::getId() const
     return id;
 }
 
-size_t Egg::getIdLen() const
-{
-    return idLen;
-}
-
 size_t Egg::getSize() const
 {
     return size;
@@ -68,7 +54,6 @@ Egg& Egg::operator=(const Egg& other)
     }
 
     size = other.size;
-    idLen = other.idLen;
     if(other.id != NULL)
     {
         strcpy(id, other.id);
@@ -97,6 +82,19 @@ Egg& Egg::operator/=(int divisor)
     size /= divisor;
 
     return *this;
+}
+
+Egg& Egg::operator++()
+{
+    size++;
+    return *this;
+}
+
+Egg Egg::operator++(int)
+{
+    Egg other = *this;
+    size++;
+    return other;
 }
 
 bool Egg::operator==(const Egg& other)
@@ -129,10 +127,10 @@ bool Egg::operator<=(const Egg& other)
     return *this == other || *this < other;
 }
 
-std::ostream& Egg::operator<<(std::ostream& stream)
+std::ostream& operator<<(std::ostream& stream, const Egg& egg)
 {
-    stream << "Size: " << " " << size
-           << " " << "id: " << id << std::endl;
+    stream << "Size: " << " " << egg.getSize()
+           << " " << "id: " << egg.getId() << std::endl;
 
     return stream;
 }

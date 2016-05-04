@@ -41,6 +41,13 @@ class EggBasket
         EggBasket& operator*=(int);
         EggBasket& operator%=(const EggBasket&);
 
+        bool operator==(const EggBasket&);
+        bool operator!=(const EggBasket&);
+        bool operator<(const EggBasket&);
+        bool operator>(const EggBasket&);
+        bool operator>=(const EggBasket&);
+        bool operator<=(const EggBasket&);
+
         void add(const Egg&);
         void remove(const char*);
         bool contains(const Egg&) const;

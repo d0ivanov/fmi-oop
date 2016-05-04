@@ -8,7 +8,6 @@ class Egg
 {
     private:
         size_t size;
-        size_t idLen;
         char* id;
 
     public:
@@ -20,17 +19,18 @@ class Egg
         Egg& operator=(const Egg&);
         Egg& operator*=(int);
         Egg& operator/=(int);
+        Egg& operator++();
+        Egg operator++(int);
         bool operator==(const Egg&);
         bool operator!=(const Egg&);
         bool operator<(const Egg&);
         bool operator>(const Egg&);
         bool operator>=(const Egg&);
         bool operator<=(const Egg&);
-        std::ostream& operator<<(std::ostream&);
 
         const char* getId() const;
-        size_t getIdLen() const;
         size_t getSize() const;
 };
 
+std::ostream& operator<<(std::ostream&, const Egg&);
 #endif
