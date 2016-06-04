@@ -1,4 +1,5 @@
 #include<iostream>
+#include<cstring>
 
 #include "egg_basket.hpp"
 #include "egg.hpp"
@@ -72,22 +73,39 @@ int main()
     cout << "Basket: " << stavri.getName() << endl;
     for(size_t i = 0; i < stavri.getSize(); i++)
     {
-        cout << stavri[i] << endl;
+        cout << stavri[i];
     }
     cout << "End!" << endl << endl;
 
     cout << "Basket: " << balkan.getName() << endl;
     for(size_t i = 0; i < balkan.getSize(); i++)
     {
-        cout << balkan[i] << endl;
+        cout << balkan[i];
     }
     cout << "End!" << endl << endl;
+
+    cout << "One more: " << balkan["Balkan_Egg"];
+    try
+    {
+        cout << "One more: " << balkan["Non-existent"];
+    }catch(std::runtime_error& e)
+    {
+        cout << "Could not find element: Non-existent" << endl;
+    }
 
     section();
     divide();
     multiply();
     compare();
 
+
+    char* test = new char[6 + 2 * strlen(stavri.toString())];
+    test[0] = '\0';
+
+    test = "test " + stavri;
+    test += stavri;
+
+    cout << test << endl;
 
     return 0;
 }

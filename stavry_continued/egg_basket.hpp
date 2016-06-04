@@ -73,6 +73,6 @@ EggBasket operator/(const EggBasket&, int);
 EggBasket operator%(const EggBasket&, const EggBasket&);
 
 char* operator+(const char*, const EggBasket&);
-char* operator+=(const char*, const EggBasket&);
+char* operator+=(char*, const EggBasket&);
 
 #endif

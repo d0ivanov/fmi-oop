@@ -340,10 +340,11 @@ char* EggBasket::toString() const
     Node* current = head->next;
     while(current != NULL)
     {
-        length += current->data.getSize();
+        length += strlen(current->data.getId());
         current = current->next;
     }
     char* result = new char[length + 1];
+    result[0] = '\0';
 
     current = head->next;
     while(current != NULL)
@@ -450,7 +451,10 @@ EggBasket operator/(const EggBasket& left, int right)
 
 char* operator+=(char* left, const EggBasket& right)
 {
-    left = left + right;
+    if(left == NULL)
+        throw std::invalid_argument("NULL arguments not permitted!");
+
+    strcat(left, right.toString());
     return left;
 }
 
@@ -460,11 +464,14 @@ char* operator+(const char* left, const EggBasket& right)
     if(left == NULL)
         throw std::invalid_argument("NULL arguments not permitted!");
 
-    size_t len = strlen(right.toString()) + strlen(left);
+    char* basketString = right.toString();
+
+    size_t len = strlen(basketString) + strlen(left);
     char* result = new char[len + 1];
+    result[0] = '\0';
 
     strcat(result, left);
-    strcat(result, right.toString());
+    strcat(result, basketString);
 
     result[len] = '\0';
     return result;
