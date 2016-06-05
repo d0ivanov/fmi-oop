@@ -18,7 +18,9 @@ Cuboid::~Cuboid()
 
 bool Cuboid::contains_point(const Point& p) const
 {
-    return true;
+    return p.x >= points[0].x && p.x <= points[1].x &&
+           p.y >= points[0].y && p.y <= points[1].y &&
+           p.z >= points[0].z && p.z <= points[1].z;
 }
 
 Shape* Cuboid::clone() const

@@ -1,6 +1,8 @@
 #include<stdexcept>
 
 #include "shape_list.hpp"
+#include<iostream>
+using namespace std;
 
 ShapeList::ShapeList()
     : len(0),
@@ -31,6 +33,7 @@ ShapeList& ShapeList::operator=(const ShapeList& other)
 
     this->len = other.len;
     this->cap = other.cap;
+    shapes = new Shape*[cap];
     for(size_t i = 0; i < len; i++)
     {
         shapes[i] = other.shapes[i]->clone();
@@ -76,6 +79,20 @@ const Shape* ShapeList::operator[](size_t i) const
     }
 
     return shapes[i];
+}
+
+ShapeList ShapeList::get_containing(const Point& p) const
+{
+    ShapeList result;
+    for(size_t i = 0; i < len; i++)
+    {
+        if(shapes[i]->contains_point(p))
+        {
+            result.add(shapes[i]->clone());
+        }
+    }
+
+    return result;
 }
 
 size_t ShapeList::get_len() const

@@ -3,10 +3,11 @@
 
 #include "shape_list.hpp"
 #include "parser.hpp"
-#include "sphere.hpp"
-#include "cuboid.hpp"
 #include "shape.hpp"
 #include "pyramid.hpp"
+#include "sphere.hpp"
+#include "cuboid.hpp"
+#include "shape_group.hpp"
 
 ShapeList Parser::parse(std::istream& istr) const
 {
@@ -16,45 +17,26 @@ ShapeList Parser::parse(std::istream& istr) const
         const char* object_type = get_object(istr);
         if(istr.eof())
             break;
+        if(strcmp(object_type, "group") == 0)
+        {
+            if(istr.get() == 'i')
+            {
+                istr.get();
+            }
+            else
+            {
+                istr.get();
+                istr.get();
 
-        if(strcmp(object_type, "group in") == 0)
-        {
-            parse_group(istr, shapes);
+                return shapes;
+            }
         }
-        else
-        {
-            parse_shape(object_type, istr, shapes);
-        }
+
+        Shape* shape = get_shape(object_type);
+        shape->parse(istr);
+        shapes.add(shape);
     }
     return shapes;
-}
-
-void Parser::parse_group(std::istream& istr, ShapeList& shapes) const
-{
-    Point p;
-    double scalar;
-    size_t current_len = shapes.get_len() - 1;
-
-    istr >> p;
-    istr >> scalar;
-    const char* object_type = get_object(istr);
-    while(!istr.eof() && strcmp(object_type, "group out") != 0)
-    {
-        parse_shape(object_type, istr, shapes);
-        object_type = get_object(istr);
-    }
-
-    for(size_t i = current_len; i < shapes.get_len(); i++)
-    {
-        shapes[i]->scale(p, scalar);
-    }
-}
-
-void Parser::parse_shape(const char* name, std::istream& istr, ShapeList& shapes) const
-{
-    Shape* shape = get_shape(name);
-    shape->parse(istr);
-    shapes.add(shape);
 }
 
 Shape* Parser::get_shape(const char* name) const
@@ -71,6 +53,10 @@ Shape* Parser::get_shape(const char* name) const
     {
         return new Pyramid();
     }
+    else if(strcmp(name, "group") == 0)
+    {
+        return new ShapeGroup(Parser());
+    }
 
     throw std::invalid_argument(name);
 }
@@ -82,37 +68,23 @@ const char* Parser::get_object(std::istream& istr) const
     char* buffer = new char[cap + 1];
     char c;
 
-    while(!istr.eof())
+    while(c != ' ' && !istr.eof())
     {
         c = istr.get();
-        if(c != '\n' && c != '\t')
+        if(len >= cap + 1)
         {
-            if(c == ' ' && istr.peek() != 'i')
-                continue;
-            if(len >= cap + 1)
+            cap *= 2;
+            char* new_buff = new char[cap];
+            for(size_t i = 0; i < len; i++)
             {
-                cap *= 2;
-                char* new_buff = new char[cap];
-                for(size_t i = 0; i < len; i++)
-                {
-                    new_buff[i] = buffer[i];
-                }
-                delete [] buffer;
-                buffer = new_buff;
-
+                new_buff[i] = buffer[i];
             }
-
-            if((c >= '0' && c <= '9') || c == '-')
-            {
-                istr.putback(c);
-                buffer[len] = '\0';
-                return buffer;
-            }
-            else
-            {
-                buffer[len++] = c;
-            }
+            delete [] buffer;
+            buffer = new_buff;
         }
+
+        if(c != ' ' && c != '\n')
+            buffer[len++] = c;
     }
 
     buffer[len] = '\0';

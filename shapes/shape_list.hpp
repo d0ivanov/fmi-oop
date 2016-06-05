@@ -21,6 +21,8 @@ class ShapeList
         Shape* operator[](size_t);
         const Shape* operator[](size_t) const;
 
+        ShapeList get_containing(const Point&) const;
+
         size_t get_len() const;
 
     private:
